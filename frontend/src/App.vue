@@ -3,6 +3,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import RiskScatter from './components/RiskScatter.vue'
 import ContribBars from './components/ContribBars.vue'
 import RiskGauge from './components/RiskGauge.vue'
+import RiskJourney from './components/RiskJourney.vue'
 
 const meta = ref(null)
 const cohort = ref([])
@@ -11,6 +12,8 @@ const values = reactive({})
 const result = ref(null)
 
 const xKey = ref('age')
+const yKey = ref('prior_admissions')
+const zKey = ref('risk')
 const filter = ref('all')
 const search = ref('')
 const error = ref('')

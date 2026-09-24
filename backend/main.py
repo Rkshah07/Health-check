@@ -11,6 +11,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+from dotenv import load_dotenv
+load_dotenv()
+
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
@@ -125,6 +128,34 @@ def predict(body: PredictIn):
 def health():
     return {"status": "ok", "model_ready": "model" in S}
 
+class ExplainIn(BaseModel):
+    patient: dict
+    prediction: dict
+    risk_factors: list
+
+@app.post("/api/risk/explain")
+def risk_explain(body: ExplainIn):
+    try:
+        from services.groq_service import explain_risk
+        explanation = explain_risk(body.model_dump())
+        return explanation
+    except Exception as e:
+        raise HTTPException(500, str(e))
+
+class ChatIn(BaseModel):
+    patient: dict
+    prediction: dict
+    risk_factors: list
+    messages: list
+
+@app.post("/api/risk/chat")
+def risk_chat(body: ChatIn):
+    try:
+        from services.groq_service import chat_risk
+        reply = chat_risk(body.model_dump())
+        return {"reply": reply}
+    except Exception as e:
+        raise HTTPException(500, str(e))
 
 # Serve the built Vue app from the same origin (registered last so /api wins).
 if STATIC.is_dir():
